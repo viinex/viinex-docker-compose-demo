@@ -2,23 +2,78 @@ services:
 
   etcd:
     image: bitnamilegacy/etcd:latest
-    hostname: vnx-etcd-0
     ports:
       - "2379:2379"
     environment:
       ALLOW_NONE_AUTHENTICATION: yes
+    volumes:
+      - ./etcd-persistence:/bitnami/etcd
 
-  # this one is totally optional.
+  # optional. can be replaced with etcd-workbench desktop client
+  # or any etcd client of your choice.
   etcd-workbench:
     image: tzfun/etcd-workbench:latest
+    depends_on:
+      - etcd
     ports:
       - "8002:8002"
     volumes:
       - ./etcd-workbench.conf:/usr/tzfun/etcd-workbench/etcd-workbench.conf
       - ./etcd-workbench-data:/usr/tzfun/etcd-workbench/data
 
+  # optional. vnx-class collects metrics from viinex instances and is set up
+  # to push them into this victoria-metrics instance.
+  victoria-metrics:
+    image: victoriametrics/victoria-metrics:latest
+    ports:
+      - "8428:8428"
+    volumes:
+      - ./victoria-metrics-data:/vmdata
+    command:
+      - "--storageDataPath=/vmdata"
+      - "--httpListenAddr=:8428"
+
+  # optional.
+  grafana:
+    image: grafana/grafana:latest
+    depends_on:
+      - "victoria-metrics"
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana-data:/var/lib/grafana
+      
+  # this service generates config for viinex instances, given the Jsonnet templates
+  # and yaml files stored in etcd. It also routes RPC requests to viinex instances.
   vnx-class:
     image: viinex/vnx-class:latest
-    hostname: vnx-class-0
+    depends_on:
+      - etcd
+      # - victoria-metrics too but not necessarily
     ports:
       - "8080:8080"
+
+  # viinex worker instance itself, configured to be managed by `vnx-class`.
+  viinex:
+    image: viinex/viinex:latest
+    network_mode: host
+    # for webrtc one would need a host network mode.
+    # otherwise uncomment the following:
+    # (although the ports are defined in Jsonets so these may vary).
+    #ports:
+    #  - "8880:8880"
+    #  - "554:554"
+    volumes:
+      - ./vnxdata1:/vnxdata
+      - ./vnxconf1:/var/lib/viinex/vnxclass
+    environment:
+      REALM: project1
+      INSTANCE_ID: vnxworker01
+      AUTHID: vnxworker
+      # is obtained with `wick keygen` and should match public key written to etcd for this AUTHID
+      PRIVATE_KEY: "f4aa5571471ef77161f48281b61d92c2f86a822aba30617756a8cc20b5a97fbf"
+      # with bridge network URL this should be vnx-class:8080 (where WAMP router listens).
+      #URL: ws://vnx-class:8080/ws
+      # However with `network_mode: host` this should be pointing to localhost or the address where vnx-class runs
+      # because `vnx-class` name can't be resolved by docker with host network mode.
+      URL: ws://localhost:8080/ws

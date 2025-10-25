@@ -7,7 +7,7 @@ services:
     environment:
       ALLOW_NONE_AUTHENTICATION: yes
     volumes:
-      - ./etcd-persistence:/bitnami/etcd
+      - ./etcd-data:/bitnami/etcd/data
 
   # optional. can be replaced with etcd-workbench desktop client
   # or any etcd client of your choice.

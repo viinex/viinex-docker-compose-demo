@@ -1,0 +1,24 @@
+services:
+
+  etcd:
+    image: bitnamilegacy/etcd:latest
+    hostname: vnx-etcd-0
+    ports:
+      - "2379:2379"
+    environment:
+      ALLOW_NONE_AUTHENTICATION: yes
+
+  # this one is totally optional.
+  etcd-workbench:
+    image: tzfun/etcd-workbench:latest
+    ports:
+      - "8002:8002"
+    volumes:
+      - ./etcd-workbench.conf:/usr/tzfun/etcd-workbench/etcd-workbench.conf
+      - ./etcd-workbench-data:/usr/tzfun/etcd-workbench/data
+
+  vnx-class:
+    image: viinex/vnx-class:latest
+    hostname: vnx-class-0
+    ports:
+      - "8080:8080"

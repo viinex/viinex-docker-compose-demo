@@ -1,10 +1,10 @@
 # viinex demo environment for docker compose
 
 ## What is this
-Viinex itself is a standalone service which does not win anything from
-containerization. It's very easy to install viinex on Ubuntu or Debian
-as a .deb package, and then one can just manage its config in
-`/etc/viinex.conf.d` and/or via API.
+Viinex is a standalone service which can easily be installed on Ubuntu or Debian
+as a .deb package, and then one can manage its "static" config in
+`/etc/viinex.conf.d` and/or via API. The scenario with a static config
+may be viewed as the easiest one for development or testing.
 
 This repo represents a demo environment to run a number of third party
 components, and also the component `vnx-class` which can manage viinex
@@ -84,3 +84,34 @@ docker compose up -d
   available at rtsp://localhost:554. Also viinex API is available via
   WAMP router which is implemented with `vnx-class` service and is
   listening at `ws://localhost:8080/ws`.
+
+## Additional/alternative usage patterns
+* One may extract the viinex configuration for a particular cluster
+  from `vnx-class` with the following call:
+```
+export WICK_URL=ws://localhost:8080/ws
+export WICK_AUTHMETHOD=cryptosign
+export WICK_AUTHID=vnxworker
+export WICK_PRIVATE_KEY=f4aa5571471ef77161f48281b61d92c2f86a822aba30617756a8cc20b5a97fbf
+export WICK_REALM=project1
+
+wick call com.viinex.infra.get_cluster_config CLUSTERNAME | jq '.[0]' -r
+```
+where `CLUSTERNAME` is the name of the cluster (appears in etcd KV
+store as `/config/TENANT/PROJECT/clusters/CLUSTERNAME.yaml`).
+Wick utility can be obtained from https://github.com/viinex/wick; it's
+also shipped with viinex and can be run with `docker exec` from within
+viinex cluster.
+
+* It may be convenient to have the Jsonnet scripts locally to test and
+develop them. Some of the scripts are available at
+https://github.com/viinex/config-templates. There is a Makefile which
+shows how viinex configuration can be generated from a given .yaml
+file (higher level cluster configuration) and Jsonnet files, -- all
+done locally, without the recourse to `vnx-class` service. All that is
+required in this case is a `jsonnet` implementation. The resulting
+viinex configuration may be used as a static configuration for viinex
+instance, or can be used to create a dynamic cluster in a viinex
+instance using the API described in section 3.19 of viinex
+documentation
+https://viinex.com/wp-content/uploads/2025/10/ViinexGuide.pdf

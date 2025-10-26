@@ -1,6 +1,6 @@
-## viinex demo environment for docker compose
+# viinex demo environment for docker compose
 
-# What is this
+## What is this
 Viinex itself is a standalone service which does not win anything from
 containerization. It's very easy to install viinex on Ubuntu or Debian
 as a .deb package, and then one can just manage its config in
@@ -46,7 +46,7 @@ What's to be deployed here is:
   obtained from `vnx-class`.
 
 
-# Deployment
+## Deployment
 
 0. Have docker and docker compose installed:
 ```
@@ -66,7 +66,7 @@ sudo apt install etcd-client
 docker compose up -d
 ```
 
-# Usage
+## Usage
 * Navigate to http://localhost:8002 to manage viinex configuration. To
   log in, enter `etcd` as host name to connect to. Go to
   `/config/tenant1/project1` key prefix. Subkey `clusters` contain the

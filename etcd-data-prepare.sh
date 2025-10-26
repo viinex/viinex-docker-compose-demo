@@ -14,3 +14,6 @@ fi
 etcdctl snapshot restore etcd-snapshot --data-dir=etcd-data
 find etcd-data/ -type d -exec chmod 777 '{}' ';'
 find etcd-data/ -type f -exec chmod 666 '{}' ';'
+
+mkdir -p grafana-data
+chmod 777 grafana-data

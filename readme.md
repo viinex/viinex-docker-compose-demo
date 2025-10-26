@@ -48,7 +48,7 @@ What's to be deployed here is:
 
 ## Deployment
 
-0. Have docker and docker compose installed:
+0. Make sure you have docker and docker compose installed:
 ```
 sudo apt install docker.io docker-compose-v2
 ```
@@ -57,7 +57,7 @@ Also `etcdctl` is required for step 2 to initialize some data in etcd.
 sudo apt install etcd-client
 ```
 
-1. Clone this repo locally. Navigate to it in command line.
+1. Clone this repo to a local folder. Navigate to it in command line.
 
 2. Run `etcd-data-prepare.sh` script. It prepares `etcd-data` folder.
 
@@ -67,10 +67,12 @@ docker compose up -d
 ```
 
 ## Usage
-* Navigate to http://localhost:8002 to manage viinex configuration. To
-  log in, enter `etcd` as host name to connect to. Go to
-  `/config/tenant1/project1` key prefix. Subkey `clusters` contain the
-  configurations to be depoyed on viinex instances. For more
+* Navigate to http://localhost:8002 (etcd-workbench web ui) to manage
+  higher-level viinex configuration and config templates. To log in, enter
+  `etcd` as host name to connect to. Go to `/config/tenant1/project1`
+  key prefix. Subkey `clusters` contains the configurations to be
+  depoyed onto viinex instances. Key `mapping.yaml` describes how
+  clusters should be distributed across viinex instances. For more
   information, refer to readme at `vnx-class` repository.
   
 * Navigate to http://localhost:3000 to view metrics. Default login and

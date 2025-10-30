@@ -13,6 +13,7 @@ services:
   # or any etcd client of your choice.
   etcd-workbench:
     image: tzfun/etcd-workbench:latest
+    user: "1001:0"
     depends_on:
       - etcd
     ports:
@@ -44,7 +45,6 @@ services:
       - "3030:3030"
     volumes:
       - ./grafana-data:/var/lib/grafana
-      - ./grafana-conf:/etc/grafana
       
   # this service generates config for viinex instances, given the Jsonnet templates
   # and yaml files stored in etcd. It also routes RPC requests to viinex instances.
@@ -72,13 +72,14 @@ services:
   # That would be worker #01 (INSTANCE_ID=vnxworker01).
   viinex:
     image: viinex/viinex:latest
+    user: "1001:0"
     network_mode: host
     # for webrtc one would need a host network mode.
     # otherwise uncomment the following:
     # (although the ports are defined in Jsonnets thus may vary).
     #ports:
     #  - "8880:8880"
-    #  - "554:554"
+    #  - "1554:1554"
     volumes:
       - ./viinex-data-01:/vnxdata
       - ./viinex-conf-01:/var/lib/viinex/vnxclass

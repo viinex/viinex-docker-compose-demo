@@ -25,6 +25,7 @@ services:
   # to push them into this victoria-metrics instance.
   victoria-metrics:
     image: victoriametrics/victoria-metrics:latest
+    user: "1001:0"
     ports:
       - "8428:8428"
     volumes:
@@ -36,12 +37,14 @@ services:
   # optional.
   grafana:
     image: grafana/grafana:latest
+    user: "1001:0"
     depends_on:
       - "victoria-metrics"
     ports:
-      - "3000:3000"
+      - "3030:3030"
     volumes:
       - ./grafana-data:/var/lib/grafana
+      - ./grafana-conf:/etc/grafana
       
   # this service generates config for viinex instances, given the Jsonnet templates
   # and yaml files stored in etcd. It also routes RPC requests to viinex instances.
@@ -51,26 +54,42 @@ services:
       - etcd
       # - victoria-metrics too but not necessarily
     ports:
+      # this port should be referenced in URL variable of viinex instance container
+      # (that URL points to the endpoint of a WAMP router which runs inside of vnx-class).
+      # It's configured with `WAMP` environment variable
       - "8080:8080"
+    environment:
+      ETCD_ENDPOINTS: etcd:2379 # comma separated if there's more than one etcd node
+      ETCD_USERNAME: vnxclass
+      ETCD_PASSWORD: vnxclass
+      ETCD_PREFIX: /viinex
+      # WAMP listen endpoint, should be exposed,
+      # and should be matched with URL environment variable in viinex instances
+      WAMP: 0.0.0.0:8080 
+      PROMETHEUS_PUSH_URI: http://victoria-metrics:8428/api/v1/import/prometheus
 
   # viinex worker instance itself, configured to be managed by `vnx-class`.
+  # That would be worker #01 (INSTANCE_ID=vnxworker01).
   viinex:
     image: viinex/viinex:latest
     network_mode: host
     # for webrtc one would need a host network mode.
     # otherwise uncomment the following:
-    # (although the ports are defined in Jsonets so these may vary).
+    # (although the ports are defined in Jsonnets thus may vary).
     #ports:
     #  - "8880:8880"
     #  - "554:554"
     volumes:
-      - ./vnxdata1:/vnxdata
-      - ./vnxconf1:/var/lib/viinex/vnxclass
+      - ./viinex-data-01:/vnxdata
+      - ./viinex-conf-01:/var/lib/viinex/vnxclass
     environment:
+      # realm is same as "project" (in `tenant/PROJECT` division).
       REALM: project1
       INSTANCE_ID: vnxworker01
       AUTHID: vnxworker
-      # is obtained with `wick keygen` and should match public key written to etcd for this AUTHID
+      # is obtained with `wick keygen` and should match public key written to etcd for this AUTHID.
+      # viinex instances running in a datacenter may probably all share the same key,
+      # but for the edge devices a unique keypair should be associated with every viinex instance.
       PRIVATE_KEY: "f4aa5571471ef77161f48281b61d92c2f86a822aba30617756a8cc20b5a97fbf"
       # with bridge network URL this should be vnx-class:8080 (where WAMP router listens).
       #URL: ws://vnx-class:8080/ws

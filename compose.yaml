@@ -42,7 +42,7 @@ services:
     depends_on:
       - "victoria-metrics"
     ports:
-      - "3030:3030"
+      - "3030:3000"
     volumes:
       - ./grafana-data:/var/lib/grafana
       

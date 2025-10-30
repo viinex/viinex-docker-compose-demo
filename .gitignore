@@ -1,2 +1,8 @@
 *~
+viinex-conf-*/*
+viinex-data-*/*
+etcd-data/*
+etcd-workbench-data/*
+grafana-data/*
+victoria-metrics-data/*
 

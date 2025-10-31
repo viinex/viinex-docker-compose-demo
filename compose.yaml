@@ -75,8 +75,7 @@ services:
     user: "1001:0"
     network_mode: host
     # for webrtc one would need a host network mode.
-    # otherwise uncomment the following:
-    # (although the ports are defined in Jsonnets thus may vary).
+    # otherwise uncomment the following (should match RTSP_PORT and HTTP_PORT defined in environment)
     #ports:
     #  - "8880:8880"
     #  - "1554:1554"
@@ -97,3 +96,6 @@ services:
       # However with `network_mode: host` this should be pointing to localhost or the address where vnx-class runs
       # because `vnx-class` name can't be resolved by docker with host network mode.
       URL: ws://localhost:8080/ws
+      # these two (or potentialy more of them) are to be referenced in templates.
+      RTSP_PORT: 1554
+      HTTP_PORT: 8880

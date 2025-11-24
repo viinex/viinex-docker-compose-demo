@@ -82,6 +82,7 @@ services:
     volumes:
       - ./viinex-data-01:/vnxdata
       - ./viinex-conf-01:/var/lib/viinex/vnxclass
+      - ./zmq-sockets:/tmp/zmq-sockets
     environment:
       # realm is same as "project" (in `tenant/PROJECT` division).
       REALM: project1
@@ -99,3 +100,7 @@ services:
       # these two (or potentialy more of them) are to be referenced in templates.
       RTSP_PORT: 1554
       HTTP_PORT: 8880
+      ZMQ_ENDPOINT: ipc:///tmp/zmq-sockets/viinex-zmq.ipc
+      ZMQ_SOCKET_BEHAVIOR: bind
+    command:
+      - --log-level=DEBUG

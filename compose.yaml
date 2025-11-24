@@ -102,5 +102,5 @@ services:
       HTTP_PORT: 8880
       ZMQ_ENDPOINT: ipc:///tmp/zmq-sockets/viinex-zmq.ipc
       ZMQ_SOCKET_BEHAVIOR: bind
-    command:
-      - --log-level=DEBUG
+    #command:
+    #  - --log-level=DEBUG

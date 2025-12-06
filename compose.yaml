@@ -1,6 +1,8 @@
 services:
 
   etcd:
+    profiles:
+      - infra
     image: bitnamilegacy/etcd:latest
     ports:
       - "2379:2379"
@@ -12,6 +14,8 @@ services:
   # optional. can be replaced with etcd-workbench desktop client
   # or any etcd client of your choice.
   etcd-workbench:
+    profiles:
+      - infra
     image: tzfun/etcd-workbench:latest
     user: "1001:0"
     depends_on:
@@ -25,6 +29,8 @@ services:
   # optional. vnx-class collects metrics from viinex instances and is set up
   # to push them into this victoria-metrics instance.
   victoria-metrics:
+    profiles:
+      - metrics
     image: victoriametrics/victoria-metrics:latest
     user: "1001:0"
     ports:
@@ -37,6 +43,8 @@ services:
 
   # optional.
   grafana:
+    profiles:
+      - metrics
     image: grafana/grafana:latest
     user: "1001:0"
     depends_on:
@@ -49,6 +57,8 @@ services:
   # this service generates config for viinex instances, given the Jsonnet templates
   # and yaml files stored in etcd. It also routes RPC requests to viinex instances.
   vnx-class:
+    profiles:
+      - infra
     image: viinex/vnx-class:latest
     depends_on:
       - etcd
@@ -71,6 +81,8 @@ services:
   # viinex worker instance itself, configured to be managed by `vnx-class`.
   # That would be worker #01 (INSTANCE_ID=vnxworker01).
   viinex:
+    profiles:
+      - worker
     image: viinex/viinex:latest
     user: "1001:0"
     network_mode: host

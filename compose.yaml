@@ -114,5 +114,6 @@ services:
       HTTP_PORT: 8880
       ZMQ_ENDPOINT: ipc:///tmp/zmq-sockets/viinex-zmq.ipc
       ZMQ_SOCKET_BEHAVIOR: bind
+      AUTH_SECRET: "cCzNncOjDtFZCIASFPQGFWs3TTIdKQz0uzXEbf2G+P0="
     #command:
     #  - --log-level=DEBUG

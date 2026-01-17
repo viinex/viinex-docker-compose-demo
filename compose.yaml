@@ -84,7 +84,7 @@ services:
     profiles:
       - worker
     image: viinex/viinex:latest
-    user: "1001:0"
+    user: "1001"
     network_mode: host
     # for webrtc one would need a host network mode.
     # otherwise uncomment the following (should match RTSP_PORT and HTTP_PORT defined in environment)
@@ -95,6 +95,8 @@ services:
       - ./viinex-data-01:/vnxdata
       - ./viinex-conf-01:/var/lib/viinex/vnxclass
       - ./zmq-sockets:/tmp/zmq-sockets
+    devices:
+      - /dev/video0:/dev/video0
     environment:
       # realm is same as "project" (in `tenant/PROJECT` division).
       REALM: project1

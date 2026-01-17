@@ -97,7 +97,20 @@ services:
       - ./zmq-sockets:/tmp/zmq-sockets
     devices:
       - /dev/video0:/dev/video0
+      - /dev/dri:/dev/dri
+    group_add:
+      - video
+      - render
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1 # Or 'all'
+              capabilities: [gpu, video]      
     environment:
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: compute,video,utility      
       # realm is same as "project" (in `tenant/PROJECT` division).
       REALM: project1
       INSTANCE_ID: vnxworker01
